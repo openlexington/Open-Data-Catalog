@@ -188,6 +188,11 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
+        }, 
+        'email': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
         },
     }
 }

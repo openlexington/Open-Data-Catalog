@@ -1,5 +1,11 @@
-import random
 from datetime import datetime
+import logging
+import random
+import pytz
+from pytz import timezone
+import simplejson as json
+import twitter
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core import serializers
@@ -11,13 +17,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
-import pytz
-from pytz import timezone
 from django.core.cache import cache
-from models import TwitterCache
-import twitter
-import simplejson as json
 
 from models import *
 from forms import *
@@ -150,23 +150,29 @@ def suggest_content(request):
     return render_to_response('submit.html', {'form': form}, context_instance=RequestContext(request))
 
 def send_email(user, data):
-    subject, user_email = 'OpenDataPhilly - Data Submission', (user.first_name + " " + user.last_name, user.email)
+    subject, user_email = 'OpenDataCatalog - Data Submission', (user.first_name + " " + user.last_name, user.email)
     text_content = render_to_string('submit_email.txt', data)
     text_content_copy = render_to_string('submit_email_copy.txt', data)
 
-    mail_managers(subject, text_content)
-    
-    msg = EmailMessage(subject, text_content_copy, to=user_email)
-    msg.send()
-    
+    # We shouldn't be writing the database in a method called send_email
+    # but refactoring one thing at a time.
     sug_object = Submission()
     sug_object.user = user
     sug_object.email_text = text_content
-    
     sug_object.save()
 
-    return sug_object
+    num_sent = mail_managers(subject, text_content, fail_silently=True)
+    if num_sent == 0:
+        message = 'Did not send suggestion email to managers: %s'
+        logging.getLogger('email').error(message % (text_content,))
+    
+    msg = EmailMessage(subject, text_content_copy, to=user_email)
+    num_sent = msg.send(fail_silently=True)
+    if num_sent == 0:
+        message = 'Did not send suggestion email to original-poster: %s'
+        logging.getLogger('email').error(message % (text_content_copy,))
 
+    return sug_object
 
 
 ## views called by js ajax for object lists
