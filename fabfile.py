@@ -62,14 +62,21 @@ def links_and_permissions():
 def create_postgres_user():
     fab.sudo('createuser -S -d -R -P %s' % (DB_USER,), user='postgres')
 
+
 def create_postgres_table():
     fab.sudo('psql template1 -c '
              '"CREATE DATABASE catalog OWNER \\\\"%s\\\\";"' % (DB_USER,),
              user='postgres')
 
+
 def postgres():
     create_postgres_user()
     create_postgres_table()
+
+
+def local_settings():
+    with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
+        fab.run('cp local_settings.py.example local_settings.py')
 
 
 def syncdb():
@@ -84,4 +91,5 @@ def catalog():
     pip_from_app()
     links_and_permissions()
     postgres()
+    local_settings()
     syncdb()
