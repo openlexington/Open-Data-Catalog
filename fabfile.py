@@ -17,8 +17,8 @@ from fabric import api as fab
 #               'catalog' for both a unix user and a postgres user is
 #               recommended, as the sample config supports it.
 DB_USER='catalog'
-
-GIT_REPO='https://github.com/azavea/Open-Data-Catalog.git'
+GIT_REPO='https://github.com/openlexington/Open-Data-Catalog.git'
+OVERLAY_REPO='https://github.com/openlexington/ODC-overlay.git'
 
 
 def apt_dependencies():
@@ -79,6 +79,11 @@ def local_settings():
         fab.run('cp local_settings.py.example local_settings.py')
 
 
+def style_overlay():
+    with fab.cd('opendatacatalog'):
+        fab.run('git clone %s' % (OVERLAY_REPO,))
+
+
 def syncdb():
     with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
         fab.run('../../bin/python manage.py syncdb')
@@ -92,4 +97,5 @@ def catalog():
     links_and_permissions()
     postgres()
     local_settings()
+    style_overlay()
     syncdb()
