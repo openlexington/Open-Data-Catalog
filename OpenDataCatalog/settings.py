@@ -1,10 +1,6 @@
 import os
 # Django settings for opendata project.
 
-SITE_ROOT = ""
-RECAPTCHA_PUBLIC_KEY = ""
-RECAPTCHA_PRIVATE_KEY = ""
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -98,18 +94,12 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'insecure'
-
 ### Package settings
 ACCOUNT_ACTIVATION_DAYS = 7
-TWITTER_USER = None
 TWITTER_TIMEOUT = 6000
 THUMBNAIL_EXTENSION = 'png'
 PAGINATION_DEFAULT_WINDOW = 2
 ###
-
-LOGIN_URL = SITE_ROOT + "/accounts/login/"
 
 COMMENTS_APP = 'comments'
 
@@ -206,3 +196,10 @@ LOGGING = {
         },
     }
 }
+
+try:
+    from local_settings import *
+except Exception, e:
+    raise e
+
+LOGIN_URL = SITE_ROOT + "/accounts/login/"
