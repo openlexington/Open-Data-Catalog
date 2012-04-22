@@ -47,15 +47,14 @@ class FormGenerator(object):
         if self.policy_document:
             return
         # S3 wants something that isn't quite isoformat
-        expiry = datetime.datetime.now() + datetime.timedelta(minutes=60)
-        expiry = expiry.isoformat().split('.')[0] + 'Z'
-        values = {'expiration': expiry,
+        expiry = datetime.datetime.now() + datetime.timedelta(days=3)
+        values = {'expiration': '%sZ' % (expiry.isoformat(),),
                   'conditions': [
                       {'bucket': self.bucket_name()},
                       {'acl': self.acl()},
                       {'success_action_redirect': self.redirect_to()},
-                      ['starts-with', '$key', ''],
-                      ['starts-with', '$Content-Type', '']]}
+                      ['starts-with', '$key', '']]}
+                      #['starts-with', '$Content-Type', '']]}
         self.policy_document = base64.b64encode(simplejson.dumps(values))
 
     def _find_warehouse(self):
