@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     'comments',
     'suggestions',
     'contest',
+    'warehouse',
     
 )
 
@@ -195,6 +196,16 @@ try:
     from local_settings import *
 except Exception, e:
     raise e
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    LOCAL_STATICFILE_DIR,
+    os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                 'OpenDataCatalog/opendata/static')),
+)
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".

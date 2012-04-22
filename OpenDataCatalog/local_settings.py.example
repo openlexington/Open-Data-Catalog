@@ -4,6 +4,8 @@ import os
 SITE_ROOT = 'http://opendatacatalog.mycity.gov:8000'
 
 # Theme info
+LOCAL_STATICFILE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                               '../../ODC-overlay/static'))
 LOCAL_TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
                              '../../ODC-overlay/templates'))
 
@@ -13,6 +15,10 @@ RECAPTCHA_PRIVATE_KEY = ''
 
 # Twitter stuff
 TWITTER_USER = None
+
+# AWS Credentials for Warehouse stuff
+AWS_ACCESS_KEY = None
+AWS_SECRET_KEY = None
 
 # Contacts
 mx_host = 'mycity.gov'
