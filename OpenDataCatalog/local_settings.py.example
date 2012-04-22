@@ -1,4 +1,11 @@
-SITE_ROOT = 'http://opendatacatalog.mycity.gov'
+import os
+
+
+SITE_ROOT = 'http://opendatacatalog.mycity.gov:8000'
+
+# Theme info
+LOCAL_TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                             '../../openlexington-overlay/templates'))
 
 # ReCatchpa stuff
 RECAPTCHA_PUBLIC_KEY = ''
