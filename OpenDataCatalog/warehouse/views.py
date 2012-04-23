@@ -6,10 +6,14 @@ import simplejson
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
-from django.shortcuts import render_to_response
+from django.contrib.auth.models import User, Group
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 #from django.http import HttpResponseRedirect
+
+from opendata.forms import ResourceForm
+from opendata.models import Url, UrlType
+from models import Warehouse
 
 
 class FormGenerator(object):
@@ -71,6 +75,7 @@ class FormGenerator(object):
 
 
 @permission_required('warehouse.upload')
+@permission_required('opendata.add_resource')
 def upload(request):
     # TODO(todd): make sure they have upload access warehouse.upload
     user = User.objects.get(username=request.user)
@@ -79,5 +84,42 @@ def upload(request):
 		              context_instance=RequestContext(request))
 
 
+@permission_required('warehouse.upload')
+@permission_required('opendata.add_resource')
 def postback(request):
-    pass
+    bucket = request.GET['bucket']
+    key = request.GET['key']
+    url = 'https://%s.s3.amazonaws.com/%s' % (bucket, key)
+    form = ResourceForm(initial={'key': key, 'bucket': bucket, 'url': url})
+    return render_to_response('warehouse/resource.html',
+            {'form': form, 'url': url},
+		    context_instance=RequestContext(request))
+
+
+@permission_required('warehouse.upload')
+@permission_required('opendata.add_resource')
+def finalize(request):
+    form = ResourceForm(request.POST)
+    user = User.objects.get(username=request.user)
+    warehouse = Warehouse.objects.get(
+                        bucket_name=form.data['bucket'])
+    group = warehouse.group
+    form.instance.organization = group.name
+    form.instance.created_by = user
+    form.instance.last_updated_by = user
+    form.instance.created = datetime.datetime.utcnow()
+    if form.is_valid():
+        resource = form.save()
+        url_type = UrlType.objects.get(url_type='Warehouse')
+        url = Url()
+        url.resource = resource
+        url.url_type = url_type
+        url.url = form.data['url']
+        url.url_label = form.data['url']
+        url.save()
+        return redirect('%s/opendata/resource/%i' % (settings.SITE_ROOT,
+                                                     resource.pk))
+    else:
+        return render_to_response('warehouse/resource.html',
+                {'form': form, 'url': form.data['url']},
+                context_instance=RequestContext(request))
