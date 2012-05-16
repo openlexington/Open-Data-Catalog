@@ -22,7 +22,7 @@ DATABASES = {
         'NAME': 'catalog',                      # Or path to database file if using sqlite3.
         'USER': 'catalog',                      # Not used with sqlite3.
         'PASSWORD': 'passw0rd',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': '',                      # Set to 'localhost' for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -77,15 +77,6 @@ STATIC_DATA = os.path.join(os.path.dirname(__file__), 'static/')
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
 #ADMIN_MEDIA_PREFIX = '/hidden/static/admin_media/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                 'OpenDataCatalog/opendata/static')),
-)
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -152,6 +143,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.sitemaps',
     'django.contrib.humanize',
+    'south',
     'opendata',
     'registration',
     'sorl.thumbnail',
@@ -199,8 +191,8 @@ LOGGING = {
 
 try:
     from local_settings import *
-except Exception, e:
-    raise e
+except Exception:
+    pass
 
 # Additional locations of static files
 STATICFILES_DIRS = (

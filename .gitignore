@@ -7,5 +7,5 @@ static/*
 *~
 *#	
 .#*
-OpenDataCatalog/local_settings.py
-OpenDataCatalog/admin_media
+local_settings.py
+admin_media

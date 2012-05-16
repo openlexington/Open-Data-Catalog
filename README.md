@@ -6,7 +6,7 @@
 # Installing the Open Data Catalog
 ## Non-Python Dependencies
 
-        sudo apt-get install sendmail postgresql-8.4 python python-pip libpq-dev python-dev
+        sudo apt-get install sendmail postgresql python python-pip libpq-dev python-dev
 
 ## Python Dependencies
 
@@ -45,6 +45,9 @@ Grab the python dependencies and do some final setup:
         psql template1 -c "CREATE DATABASE opendata OWNER \"odc-user\";"
         exit # Exit out of the postgres user's shell
 
+Note that running the unit tests requires that your postgres user be a super user (since it drops/creates databases). To create a user as a superuser simply do:
+
+        createuser -Ps odc-user
 
 You can verify the connection with:
 
@@ -72,6 +75,7 @@ Update the database settings in local_settings.py. You'll probably have to updat
 To create the scheme we use django "syncdb" command
 
         python manage.py syncdb
+        python manage.py migrate
 
 ## Running a server
 We installed gunicorn as part of the installation process. All you need to do now is start it:
