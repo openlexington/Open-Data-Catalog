@@ -21,6 +21,9 @@ GIT_REPO='https://github.com/openlexington/Open-Data-Catalog.git'
 OVERLAY_REPO='https://github.com/openlexington/ODC-overlay.git'
 
 
+def unix_user():
+    fab.sudo('useradd -m -G sudo %s' % (DB_USER,))
+
 def apt_dependencies():
     fab.sudo('apt-get install --yes sendmail postgresql python-pip libpq-dev '
              'python-dev git')
@@ -86,14 +89,15 @@ def style_overlay():
 
 def syncdb():
     with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
-        fab.run('../../bin/python manage.py syncdb')
+        fab.sudo('../../bin/python manage.py syncdb', user=DB_USER)
 
 def migrate():
     with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
-        fab.run('../../bin/python manage.py migrate')
+        fab.sudo('../../bin/python manage.py migrate', user=DB_USER)
 
 
 def catalog():
+    unix_user()
     dependencies()
     virtualenv()
     source()
