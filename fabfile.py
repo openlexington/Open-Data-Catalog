@@ -88,6 +88,10 @@ def syncdb():
     with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
         fab.run('../../bin/python manage.py syncdb')
 
+def migrate():
+    with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
+        fab.run('../../bin/python manage.py migrate')
+
 
 def catalog():
     dependencies()
@@ -99,3 +103,4 @@ def catalog():
     local_settings()
     style_overlay()
     syncdb()
+    migrate()
