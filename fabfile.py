@@ -59,7 +59,7 @@ def links_and_permissions():
         fab.run('mkdir media')
         fab.run('chmod 755 media')
         fab.run('ln -s ../../lib/python2.7/site-packages/django/contrib/admin'
-                'admin_media')
+                '/admin_media')
 
 
 def create_postgres_user():
@@ -108,3 +108,31 @@ def catalog():
     style_overlay()
     syncdb()
     migrate()
+
+
+def server_dependencies():
+    fab.sudo('apt-get install --yes libapache2-mod-wsgi')
+
+
+def server_config():
+    with fab.cd('opendatacatalog'):
+        fab.run('cat Open-Data-Catalog/apache.conf.sample'
+	        '| sed -e s!{{PATH}}!`pwd`/Open-Data-Catalog!'
+		'> /etc/apache2/sites-enabled/000-default')
+
+
+def static_assets():
+    with fab.cd('opendatacatalog/Open-Data-Catalog/OpenDataCatalog'):
+        fab.mkdir('static')
+        fab.run('../../bin/python manage.py collectstatic --link --noinput')
+
+
+def restart_server():
+    fab.sudo('apache2ctl restart')
+
+
+def server():
+    server_dependencies()
+    server_config()
+    static_assets()
+    restart_server()
