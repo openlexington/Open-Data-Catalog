@@ -110,7 +110,7 @@ def finalize(request):
     form.instance.created = datetime.datetime.utcnow()
     if form.is_valid():
         resource = form.save()
-        url_type = UrlType.objects.get(url_type='Warehouse')
+        url_type = UrlType.objects.get(url_type='Data')
         url = Url()
         url.resource = resource
         url.url_type = url_type
